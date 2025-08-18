@@ -3466,7 +3466,7 @@ body.dark-mode .fa-sun {
         <h1 id="hero-heading">Hizmet Bölgelerimiz</h1>
         <p>İstanbul'un Her Noktasına Profesyonel Catering Hizmeti</p>
         <div class="hero-btns">
-            <a href="#contact" class="btn">Hemen Teklif Al</a>
+            <a href="#contact" class="btn">Hemen Teklif Al...</a>
             <a href="#regions" class="btn btn-outline">Bölgeleri Keşfet</a>
         </div>
     </section>
@@ -4539,6 +4539,7 @@ body.dark-mode .fa-sun {
 /**
  * İstanbul Alev Catering - Optimize Edilmiş JavaScript
  * Tüm fonksiyonlar modern ES6+ standartlarında yazılmıştır
+ * Mobil menü ve bölge seçici sorunları düzeltilmiştir
  */
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -4554,12 +4555,24 @@ document.addEventListener("DOMContentLoaded", () => {
     setupCoveragePoints();
     setupDistrictModal();
     setupRegionFilters();
+    setupRegionTabs();
     
     // Performans optimizasyonları
     optimizeForMobile();
+    
+    // Sayfa yüklendiğinde intro animasyonunu kaldır
+    setTimeout(() => {
+        const intro = document.getElementById('intro-animation');
+        if (intro) {
+            intro.style.opacity = '0';
+            setTimeout(() => {
+                intro.style.display = 'none';
+            }, 100);
+        }
+    }, 100);
 });
 
-// 15. YATAY KAYDIRMAYI ÖNLEME
+// 1. YATAY KAYDIRMAYI ÖNLEME
 const preventHorizontalScroll = () => {
     if (window.innerWidth <= 992) {
         document.body.style.overflowX = 'hidden';
@@ -4587,16 +4600,38 @@ const preventHorizontalScroll = () => {
     }
 };
 
-// 1. TEMA YÖNETİMİ
+// 2. TEMA YÖNETİMİ
 const initTheme = () => {
     const body = document.body;
     const darkModeToggle = document.getElementById('darkModeToggle');
     
+    if (!darkModeToggle) return;
+    
+    // Kullanıcının sistem tercihini kontrol et
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)");
+    
     // Kayıtlı tema kontrolü
-    if (localStorage.getItem('theme') === 'dark') {
+    const savedTheme = localStorage.getItem('theme');
+    const systemTheme = prefersDark.matches ? 'dark' : 'light';
+    const currentTheme = savedTheme || systemTheme;
+    
+    if (currentTheme === 'dark') {
         body.classList.add('dark-mode');
         darkModeToggle.setAttribute('aria-pressed', 'true');
     }
+    
+    // Sistem teması değişirse güncelle
+    prefersDark.addEventListener('change', (e) => {
+        if (!savedTheme) { // Kullanıcı manuel seçim yapmadıysa
+            if (e.matches) {
+                body.classList.add('dark-mode');
+                darkModeToggle.setAttribute('aria-pressed', 'true');
+            } else {
+                body.classList.remove('dark-mode');
+                darkModeToggle.setAttribute('aria-pressed', 'false');
+            }
+        }
+    });
     
     // Tema değiştirme butonu
     darkModeToggle.addEventListener('click', () => {
@@ -4611,7 +4646,7 @@ const initTheme = () => {
     });
 };
 
-// 2. MOBİL MENÜ YÖNETİMİ (Optimize Edildi)
+// 3. MOBİL MENÜ YÖNETİMİ (Optimize Edildi)
 const setupMobileMenu = () => {
     const mobileMenuBtn = document.getElementById('mobileMenuBtn');
     const mobileMenuClose = document.querySelector('.mobile-menu-close');
@@ -4667,9 +4702,16 @@ const setupMobileMenu = () => {
             toggleMenu(false);
         }
     }, { passive: true });
+    
+    // Dokunmatik etkileşimler için ek optimizasyon
+    mobileMenu.addEventListener('touchmove', (e) => {
+        if (mobileMenu.classList.contains('active')) {
+            e.preventDefault();
+        }
+    }, { passive: false });
 };
 
-// 3. BACK TO TOP BUTONU
+// 4. BACK TO TOP BUTONU
 const setupBackToTop = () => {
     const backToTopBtn = document.getElementById('backToTopBtn');
     if (!backToTopBtn) return;
@@ -4682,11 +4724,12 @@ const setupBackToTop = () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     });
     
-    window.addEventListener('scroll', handleScroll);
+    // Pasif event listener kullanımı
+    window.addEventListener('scroll', handleScroll, { passive: true });
     handleScroll(); // Sayfa yüklendiğinde kontrol et
 };
 
-// 4. İLETİŞİM FORMU
+// 5. İLETİŞİM FORMU
 const setupContactForm = () => {
     const contactForm = document.getElementById('contactForm');
     if (!contactForm) return;
@@ -4752,7 +4795,7 @@ const setupContactForm = () => {
     });
 };
 
-// 5. HEADER SCROLL EFFECT
+// 6. HEADER SCROLL EFFECT
 const setupHeaderEffects = () => {
     const header = document.getElementById('mainHeader');
     const heroSection = document.querySelector('.hero');
@@ -4778,11 +4821,12 @@ const setupHeaderEffects = () => {
         handleScroll();
     });
     
-    window.addEventListener('scroll', handleScroll);
+    // Pasif event listener kullanımı
+    window.addEventListener('scroll', handleScroll, { passive: true });
     handleScroll(); // Sayfa yüklendiğinde kontrol et
 };
 
-// 6. SERVİS DROPDOWN
+// 7. SERVİS DROPDOWN
 const setupServicesDropdown = () => {
     const dropdown = document.querySelector('.services-dropdown');
     if (!dropdown) return;
@@ -4803,16 +4847,18 @@ const setupServicesDropdown = () => {
     
     // Mobil için touch event'leri
     dropdown.addEventListener('touchstart', (e) => {
-        e.preventDefault();
-        const isOpen = dropdownContent.style.opacity === '1';
-        
-        dropdownContent.style.opacity = isOpen ? '0' : '1';
-        dropdownContent.style.visibility = isOpen ? 'hidden' : 'visible';
-        dropdownContent.style.transform = isOpen ? 'translateY(20px)' : 'translateY(0)';
+        if (window.innerWidth <= 992) {
+            e.preventDefault();
+            const isOpen = dropdownContent.style.opacity === '1';
+            
+            dropdownContent.style.opacity = isOpen ? '0' : '1';
+            dropdownContent.style.visibility = isOpen ? 'hidden' : 'visible';
+            dropdownContent.style.transform = isOpen ? 'translateY(20px)' : 'translateY(0)';
+        }
     }, { passive: false });
 };
 
-// 7. ÇEREZ BİLDİRİMİ
+// 8. ÇEREZ BİLDİRİMİ
 const setupCookieConsent = () => {
     const cookieConsent = document.getElementById('cookie-consent');
     const acceptCookiesBtn = document.getElementById('accept-cookies');
@@ -4833,7 +4879,7 @@ const setupCookieConsent = () => {
     });
 };
 
-// 8. KAPSAM NOKTALARI ETKİLEŞİMİ
+// 9. KAPSAM NOKTALARI ETKİLEŞİMİ
 const setupCoveragePoints = () => {
     const points = document.querySelectorAll('.coverage-point');
     if (!points.length) return;
@@ -4841,25 +4887,31 @@ const setupCoveragePoints = () => {
     points.forEach(point => {
         point.addEventListener('mouseenter', () => {
             const tooltip = point.querySelector('.point-tooltip');
-            tooltip.style.opacity = '1';
-            tooltip.style.visibility = 'visible';
-            tooltip.style.bottom = 'calc(100% + 10px)';
+            if (tooltip) {
+                tooltip.style.opacity = '1';
+                tooltip.style.visibility = 'visible';
+                tooltip.style.bottom = 'calc(100% + 10px)';
+            }
         });
         
         point.addEventListener('mouseleave', () => {
             const tooltip = point.querySelector('.point-tooltip');
-            tooltip.style.opacity = '0';
-            tooltip.style.visibility = 'hidden';
-            tooltip.style.bottom = '100%';
+            if (tooltip) {
+                tooltip.style.opacity = '0';
+                tooltip.style.visibility = 'hidden';
+                tooltip.style.bottom = '100%';
+            }
         });
     });
 };
 
-// 9. BÖLGE TAB'LARI İÇİN JAVASCRIPT
+// 10. BÖLGE TAB'LARI İÇİN JAVASCRIPT
 const setupRegionTabs = () => {
     const tabs = document.querySelectorAll('.region-tab');
     const contents = document.querySelectorAll('.region-content');
     const points = document.querySelectorAll('.coverage-point');
+    
+    if (!tabs.length || !contents.length) return;
     
     tabs.forEach(tab => {
         tab.addEventListener('click', function() {
@@ -4920,7 +4972,7 @@ const setupRegionTabs = () => {
     }
 };
 
-// 10. MOBİL PERFORMANS OPTİMİZASYONLARI
+// 11. MOBİL PERFORMANS OPTİMİZASYONLARI
 const optimizeForMobile = () => {
     if ('matchMedia' in window && window.matchMedia('(max-width: 768px)').matches) {
         document.body.classList.add('mobile-device');
@@ -4935,12 +4987,7 @@ const optimizeForMobile = () => {
     }
 };
 
-// 11. YARDIMCI FONKSİYONLAR
-const showAlert = (message, type = 'info') => {
-    alert(message);
-};
-
-// 12. BÖLGE MODAL FONKSİYONLARI
+// 12. BÖLGE MODAL FONKSİYONLARI (Optimize Edildi)
 const setupDistrictModal = () => {
     // Modal elementini oluştur
     const modal = document.createElement('div');
@@ -4964,6 +5011,8 @@ const setupDistrictModal = () => {
     const modalCard = document.getElementById('modalDistrictCard');
     const closeBtn = document.querySelector('.modal-close-btn');
     
+    if (!districtDropdown || !showDistrictBtn || !modalElement) return;
+    
     // Bölge isimlerini normalize et
     const normalizeDistrictName = (name) => {
         return name.toLowerCase()
@@ -4981,7 +5030,7 @@ const setupDistrictModal = () => {
     // Seçilen bölgeyi göster
     const showSelectedDistrict = () => {
         if (!districtDropdown.value) {
-            showAlert('Lütfen bir bölge seçin');
+            alert('Lütfen bir bölge seçin');
             return;
         }
         
@@ -4990,18 +5039,20 @@ const setupDistrictModal = () => {
         let selectedCard = null;
         
         districtCards.forEach(card => {
-            const cardTitle = card.querySelector('.card-overlay h3').textContent;
-            const normalizedCardName = normalizeDistrictName(cardTitle);
-            
-            if (normalizedCardName === districtDropdown.value) {
-                selectedCard = card;
+            const cardTitle = card.querySelector('.card-overlay h3');
+            if (cardTitle) {
+                const normalizedCardName = normalizeDistrictName(cardTitle.textContent);
+                
+                if (normalizedCardName === districtDropdown.value) {
+                    selectedCard = card;
+                }
             }
         });
         
         if (selectedCard) {
             showDistrictCard(selectedCard);
         } else {
-            showAlert('Seçilen bölge bulunamadı');
+            alert('Seçilen bölge bulunamadı');
         }
     };
     
@@ -5023,8 +5074,20 @@ const setupDistrictModal = () => {
         modalElement.classList.add('active');
         document.body.style.overflow = 'hidden';
         
+        // Mobilde dokunmatik etkileşim için zorunlu yeniden boyutlandırma
+        if (window.innerWidth <= 768) {
+            setTimeout(() => {
+                modalCard.style.transform = 'scale(1)';
+                modalCard.style.opacity = '1';
+            }, 10);
+        }
+        
         // Orijinal karta odaklan
-        card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        if ('scrollBehavior' in document.documentElement.style) {
+            card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        } else {
+            card.scrollIntoView(true);
+        }
         
         // Orijinal kartı vurgula
         highlightCard(card);
@@ -5069,7 +5132,7 @@ const setupDistrictModal = () => {
         modalElement.setAttribute('aria-hidden', 'true');
         
         // Dropdown'a odaklan
-        districtDropdown.focus();
+        if (districtDropdown) districtDropdown.focus();
     };
     
     // Dropdown'u başlat
@@ -5077,9 +5140,11 @@ const setupDistrictModal = () => {
         const districtCards = document.querySelectorAll('.district-card');
         
         districtCards.forEach(card => {
-            const cardTitle = card.querySelector('.card-overlay h3').textContent;
-            const normalizedName = normalizeDistrictName(cardTitle);
-            card.setAttribute('data-district', normalizedName);
+            const cardTitle = card.querySelector('.card-overlay h3');
+            if (cardTitle) {
+                const normalizedName = normalizeDistrictName(cardTitle.textContent);
+                card.setAttribute('data-district', normalizedName);
+            }
         });
     };
     
@@ -5126,6 +5191,8 @@ const setupDistrictModal = () => {
 const setupRegionFilters = () => {
     const filterButtons = document.querySelectorAll('.filter-btn');
     const districtCards = document.querySelectorAll('.district-card');
+    
+    if (!filterButtons.length || !districtCards.length) return;
     
     filterButtons.forEach(button => {
         button.addEventListener('click', function() {
@@ -5191,41 +5258,6 @@ const setupRegionFilters = () => {
         }, { passive: true });
     });
 };
-
-// 14. DARK MOD OTOMATİK GEÇİŞ
-document.addEventListener("DOMContentLoaded", () => {
-    // Kullanıcının cihazının dark mode tercihine bak
-    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)");
-
-    // Temayı uygula
-    function applyTheme(e) {
-        if (e.matches) {
-            document.body.classList.add("dark-mode");
-        } else {
-            document.body.classList.remove("dark-mode");
-        }
-    }
-
-    // Sayfa ilk açıldığında temayı uygula
-    applyTheme(prefersDark);
-
-    // Kullanıcı cihazında açık/dark modu değiştirirse otomatik uygula
-    prefersDark.addEventListener("change", applyTheme);
-});
-
-// Sayfa yüklendiğinde intro animasyonunu kaldır
-window.addEventListener('load', () => {
-    const intro = document.getElementById('intro-animation');
-    setTimeout(() => {
-        intro.style.opacity = '0';
-        setTimeout(() => {
-            intro.style.display = 'none';
-        }, 100);
-    }, 100);
-    
-    // Bölge tab'larını başlat
-    setupRegionTabs();
-});
 	
     </script>
 </body>
