@@ -3466,7 +3466,7 @@ body.dark-mode .fa-sun {
         <h1 id="hero-heading">Hizmet Bölgelerimiz</h1>
         <p>İstanbul'un Her Noktasına Profesyonel Catering Hizmeti</p>
         <div class="hero-btns">
-            <a href="#contact" class="btn">Hemen Teklif Al...</a>
+            <a href="#contact" class="btn">Hemen Teklif Al</a>
             <a href="#regions" class="btn btn-outline">Bölgeleri Keşfet</a>
         </div>
     </section>
@@ -4987,99 +4987,33 @@ const optimizeForMobile = () => {
     }
 };
 
-// 12. BÖLGE MODAL FONKSİYONLARI (Tamamen Yeniden Yazıldı)
+// 12. BÖLGE MODAL FONKSİYONLARI (Güncellenmiş ve Optimize Edilmiş)
 const setupDistrictModal = () => {
-    // Modal elementini oluştur veya seç
-    let modal = document.querySelector('.district-modal');
-    if (!modal) {
-        modal = document.createElement('div');
-        modal.className = 'district-modal';
-        modal.setAttribute('aria-hidden', 'true');
-        modal.innerHTML = `
-            <div class="district-modal-content" role="dialog" aria-modal="true" aria-labelledby="modalDistrictTitle">
-                <button class="modal-close-btn" aria-label="Kapat">
-                    <i class="fas fa-times"></i>
-                </button>
-                <div class="modal-district-card" id="modalDistrictCard"></div>
-            </div>
-        `;
-        document.body.appendChild(modal);
-    }
-
     // Elementleri seç
     const districtDropdown = document.getElementById('districtDropdown');
     const showDistrictBtn = document.getElementById('showDistrictBtn');
     const modalElement = document.querySelector('.district-modal');
-    const modalContent = document.querySelector('.district-modal-content');
-    const modalCard = document.getElementById('modalDistrictCard');
-    const closeBtn = document.querySelector('.modal-close-btn');
     
     if (!districtDropdown || !showDistrictBtn || !modalElement) return;
 
-    // Tüm ilçeleri içeren dizi (eksik olanlar eklendi)
+    // Tüm ilçeleri içeren dizi (dropdown'daki sıraya göre)
     const allDistricts = [
         'arnavutkoy', 'avcilar', 'bagcilar', 'bahcelievler', 'bakirkoy',
         'basaksehir', 'bayrampasa', 'besiktas', 'beylikduzu', 'beyoglu',
         'buyukcekmece', 'catalca', 'esenler', 'esenyurt', 'eyup', 'fatih',
-        'gaziosmanpasa', 'gungoren', 'kadikoy', 'kagithane', 'kartal',
-        'kucukcekmece', 'maltepe', 'pendik', 'sancaktepe', 'sariyer',
-        'silivri', 'sultangazi', 'sisli', 'tuzla', 'umraniye', 'uskudar',
-        'zeytinburnu', 'adalar', 'atasehir', 'beykoz', 'cekmekoy', 'sile',
-        'sultanbeyli'
+        'gaziosmanpasa', 'gungoren', 'kadikoy', 'kagithane', 'kucukcekmece',
+        'sariyer', 'silivri', 'sultangazi', 'sisli', 'zeytinburnu'
     ];
 
-    // Dropdown'u doldur
-    const populateDropdown = () => {
-        // Mevcut seçenekleri temizle (ilk seçenek hariç)
-        while (districtDropdown.options.length > 1) {
-            districtDropdown.remove(1);
-        }
-
-        // Alfabetik sırayla ilçeleri ekle
-        allDistricts.sort().forEach(district => {
-            const option = document.createElement('option');
-            option.value = district;
-            
-            // İlçe adını düzgün formatla
-            const formattedName = district
-                .replace(/(^|\s)\S/g, l => l.toUpperCase())
-                .replace('i̇', 'İ') // Türkçe karakter düzeltme
-                .replace('i', 'İ') // Büyük İ için
-                .replace('ı', 'I') // Büyük I için
-                .replace(/^Bagcilar/, 'Bağcılar')
-                .replace(/^Bahcelievler/, 'Bahçelievler')
-                .replace(/^Bakirkoy/, 'Bakırköy')
-                .replace(/^Besiktas/, 'Beşiktaş')
-                .replace(/^Beylikduzu/, 'Beylikdüzü')
-                .replace(/^Beyoglu/, 'Beyoğlu')
-                .replace(/^Buyukcekmece/, 'Büyükçekmece')
-                .replace(/^Catalca/, 'Çatalca')
-                .replace(/^Esenler/, 'Esenler')
-                .replace(/^Esenyurt/, 'Esenyurt')
-                .replace(/^Eyup/, 'Eyüp')
-                .replace(/^Gaziosmanpasa/, 'Gaziosmanpaşa')
-                .replace(/^Gungoren/, 'Güngören')
-                .replace(/^Kagithane/, 'Kağıthane')
-                .replace(/^Kucukcekmece/, 'Küçükçekmece')
-                .replace(/^Sariyer/, 'Sarıyer')
-                .replace(/^Sisli/, 'Şişli')
-                .replace(/^Umraniye/, 'Ümraniye')
-                .replace(/^Uskudar/, 'Üsküdar');
-            
-            option.textContent = formattedName + ' Catering';
-            districtDropdown.appendChild(option);
-        });
-    };
-
-    // Bölge isimlerini normalize et (tüm varyasyonları kapsayacak şekilde geliştirildi)
+    // Bölge isimlerini normalize et (tüm varyasyonları kapsayacak şekilde)
     const normalizeDistrictName = (name) => {
         return name.toLowerCase()
-            .replace(/ç/g, 'c')
-            .replace(/ğ/g, 'g')
-            .replace(/ı/g, 'i')
-            .replace(/ö/g, 'o')
-            .replace(/ş/g, 's')
-            .replace(/ü/g, 'u')
+            .replace(/[çc]/g, 'c')
+            .replace(/[ğg]/g, 'g')
+            .replace(/[ıi]/g, 'i')
+            .replace(/[öo]/g, 'o')
+            .replace(/[şs]/g, 's')
+            .replace(/[üu]/g, 'u')
             .replace(/ /g, '')
             .replace(/catering/gi, '')
             .replace(/istanbul/gi, '')
@@ -5088,7 +5022,7 @@ const setupDistrictModal = () => {
             .trim();
     };
 
-    // Seçilen bölgeyi göster (optimize edildi)
+    // Seçilen bölgeyi göster (optimize edilmiş)
     const showSelectedDistrict = () => {
         const selectedValue = districtDropdown.value;
         if (!selectedValue) {
@@ -5102,163 +5036,53 @@ const setupDistrictModal = () => {
 
         // Hızlı arama için önce data-attribute kontrolü
         districtCards.forEach(card => {
-            const cardDistrict = card.getAttribute('data-district');
-            if (cardDistrict && normalizeDistrictName(cardDistrict) === selectedValue) {
+            const cardDistrict = normalizeDistrictName(card.querySelector('.card-overlay h3')?.textContent || '');
+            if (cardDistrict === selectedValue) {
                 selectedCard = card;
             }
         });
-
-        // Eğer bulunamadıysa, daha kapsamlı arama yap
-        if (!selectedCard) {
-            districtCards.forEach(card => {
-                const cardTitle = card.querySelector('.card-overlay h3');
-                if (cardTitle) {
-                    const normalizedCardName = normalizeDistrictName(cardTitle.textContent);
-                    if (normalizedCardName === selectedValue) {
-                        selectedCard = card;
-                    }
-                }
-            });
-        }
 
         if (selectedCard) {
             showDistrictCard(selectedCard);
         } else {
             // Daha detaylı hata mesajı
-            const errorMsg = `Seçilen bölge (${districtDropdown.options[districtDropdown.selectedIndex].text}) bulunamadı. 
-                            Lütfen farklı bir bölge seçin veya bizimle iletişime geçin.`;
-            alert(errorMsg);
+            const selectedText = districtDropdown.options[districtDropdown.selectedIndex].text;
+            alert(`Seçilen bölge (${selectedText}) şu anda gösterilemiyor. Lütfen farklı bir bölge seçin veya bizimle iletişime geçin.`);
         }
     };
 
-    // Bölge kartını modalda göster (performans iyileştirmeleri yapıldı)
+    // Bölge kartını modalda göster
     const showDistrictCard = (card) => {
-        // Önceki modal içeriğini temizle
-        modalCard.innerHTML = '';
-
-        // Kartı derin klonla (event listener'lar dahil)
-        const clonedCard = card.cloneNode(true);
-        
-        // Mobil için optimize edilmiş içerik
-        if (window.innerWidth <= 768) {
-            // Büyük resimleri kaldır
-            const largeImages = clonedCard.querySelectorAll('img');
-            largeImages.forEach(img => {
-                if (img.width > 300) {
-                    img.remove();
-                }
-            });
-            
-            // Fazla animasyonları kaldır
-            clonedCard.querySelectorAll('*').forEach(el => {
-                el.style.animation = 'none';
-                el.style.transition = 'none';
-            });
-        }
-
-        modalCard.appendChild(clonedCard);
-        clonedCard.classList.add('modal-card');
-
-        // Modal erişilebilirlik özelliklerini güncelle
-        modalElement.setAttribute('aria-hidden', 'false');
-        const cardTitle = clonedCard.querySelector('.card-overlay h3')?.textContent || 'Bölge Detayları';
-        modalContent.setAttribute('aria-label', `${cardTitle} Detayları`);
-
         // Modalı göster
         modalElement.classList.add('active');
         document.body.style.overflow = 'hidden';
 
-        // Orijinal karta odaklan (smooth scroll)
-        if ('scrollBehavior' in document.documentElement.style) {
-            setTimeout(() => {
-                card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-            }, 100);
-        }
+        // Kartı vurgula
+        card.style.boxShadow = '0 0 0 3px var(--primary-color)';
+        card.style.transition = 'box-shadow 0.3s ease';
 
-        // Orijinal kartı vurgula
-        highlightCard(card);
-
-        // Mobil menüyü kapat
-        const mobileMenu = document.getElementById('mobileMenu');
-        if (mobileMenu?.classList.contains('active')) {
-            mobileMenu.classList.remove('active');
-        }
-
-        // Mobil cihazlarda modal içeriğine odaklan
-        if (window.innerWidth <= 768) {
-            setTimeout(() => {
-                modalContent.focus();
-            }, 50);
-        }
-    };
-
-    // Kartı vurgula (performans iyileştirmesi)
-    const highlightCard = (card) => {
-        const originalStyles = {
-            transform: card.style.transform,
-            boxShadow: card.style.boxShadow,
-            zIndex: card.style.zIndex,
-            transition: card.style.transition
-        };
-
-        card.style.transform = 'scale(1.03)';
-        card.style.boxShadow = '0 10px 25px rgba(0,0,0,0.15)';
-        card.style.transition = 'all 0.3s ease';
-        card.style.zIndex = '10';
-
-        // Vurguyu kaldır
-        const removeHighlight = () => {
-            if (card) {
-                card.style.transform = originalStyles.transform;
-                card.style.boxShadow = originalStyles.boxShadow;
-                card.style.zIndex = originalStyles.zIndex;
-                card.style.transition = originalStyles.transition;
+        // Modal kapatıldığında vurguyu kaldır
+        const observer = new MutationObserver(() => {
+            if (!modalElement.classList.contains('active')) {
+                card.style.boxShadow = '';
+                observer.disconnect();
             }
-        };
-
-        // Modal kapandığında vurguyu kaldır
-        const observer = new MutationObserver((mutations) => {
-            mutations.forEach(mutation => {
-                if (mutation.attributeName === 'class' && 
-                    !modalElement.classList.contains('active')) {
-                    removeHighlight();
-                    observer.disconnect();
-                }
-            });
         });
-
         observer.observe(modalElement, { attributes: true });
 
-        // Fallback
-        setTimeout(removeHighlight, 3000);
+        // 3 saniye sonra vurguyu otomatik kaldır (fallback)
+        setTimeout(() => {
+            card.style.boxShadow = '';
+        }, 3000);
     };
 
     // Modalı kapat
     const closeModal = () => {
         modalElement.classList.remove('active');
         document.body.style.overflow = '';
-        modalElement.setAttribute('aria-hidden', 'true');
-        
-        // Dropdown'a odaklan
-        setTimeout(() => {
-            if (districtDropdown) districtDropdown.focus();
-        }, 100);
     };
 
-    // Kartları işaretle (data attribute ekle)
-    const initializeCards = () => {
-        const districtCards = document.querySelectorAll('.district-card');
-        
-        districtCards.forEach(card => {
-            const cardTitle = card.querySelector('.card-overlay h3');
-            if (cardTitle) {
-                const normalizedName = normalizeDistrictName(cardTitle.textContent);
-                card.setAttribute('data-district', normalizedName);
-            }
-        });
-    };
-
-    // Event listener'ları ekle (optimize edildi)
+    // Event listener'ları ekle
     const addEventListeners = () => {
         // Ana buton click
         showDistrictBtn.addEventListener('click', showSelectedDistrict);
@@ -5272,7 +5096,7 @@ const setupDistrictModal = () => {
         });
 
         // Kapat butonu
-        closeBtn.addEventListener('click', closeModal);
+        document.querySelector('.modal-close-btn')?.addEventListener('click', closeModal);
 
         // Modal dışına tıklama
         modalElement.addEventListener('click', (e) => {
@@ -5287,48 +5111,14 @@ const setupDistrictModal = () => {
                 closeModal();
             }
         });
-
-        // Mobil dokunmatik etkileşimler
-        modalElement.addEventListener('touchend', (e) => {
-            if (!modalContent.contains(e.target)) {
-                closeModal();
-            }
-        }, { passive: true });
     };
 
     // Sayfa yüklendiğinde başlat
-    const init = () => {
-        populateDropdown();
-        initializeCards();
-        addEventListeners();
-        
-        // Mobil optimizasyon
-        if (window.innerWidth <= 768) {
-            const style = document.createElement('style');
-            style.textContent = `
-                @media (max-width: 768px) {
-                    .district-modal {
-                        padding: 10px !important;
-                    }
-                    .district-modal-content {
-                        width: 95% !important;
-                        max-height: 90vh !important;
-                    }
-                    .modal-district-card {
-                        padding: 15px !important;
-                    }
-                    .card-image {
-                        height: 150px !important;
-                    }
-                }
-            `;
-            document.head.appendChild(style);
-        }
-    };
-
-    // Başlat
-    init();
+    addEventListeners();
 };
+
+// Sayfa yüklendiğinde fonksiyonu çağır
+document.addEventListener("DOMContentLoaded", setupDistrictModal);
 
 // 13. BÖLGE FİLTRELEME SİSTEMİ
 const setupRegionFilters = () => {
