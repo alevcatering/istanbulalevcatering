@@ -3466,7 +3466,7 @@ body.dark-mode .fa-sun {
         <h1 id="hero-heading">Hizmet Bölgelerimiz</h1>
         <p>İstanbul'un Her Noktasına Profesyonel Catering Hizmeti</p>
         <div class="hero-btns">
-            <a href="#contact" class="btn">Hemen Teklif Al</a>
+            <a href="#contact" class="btn">Hemen Teklif Al...</a>
             <a href="#regions" class="btn btn-outline">Bölgeleri Keşfet</a>
         </div>
     </section>
@@ -4987,7 +4987,7 @@ const optimizeForMobile = () => {
     }
 };
 
-// 12. BÖLGE MODAL FONKSİYONLARI (Tamamen Yeniden Yazıldı)
+// 12. BÖLGE MODAL FONKSİYONLARI (Optimize Edilmiş Versiyon)
 const setupDistrictModal = () => {
     // Modal elementini oluştur veya seç
     let modal = document.querySelector('.district-modal');
@@ -5013,8 +5013,9 @@ const setupDistrictModal = () => {
     const modalContent = document.querySelector('.district-modal-content');
     const modalCard = document.getElementById('modalDistrictCard');
     const closeBtn = document.querySelector('.modal-close-btn');
+    const selectorTitle = document.querySelector('.selector-title');
     
-    if (!districtDropdown || !showDistrictBtn || !modalElement) return;
+    if (!districtDropdown || !showDistrictBtn || !modalElement || !selectorTitle) return;
 
     // Tüm ilçeleri Türkçe karakterlerle tanımla
     const allDistricts = [
@@ -5073,6 +5074,12 @@ const setupDistrictModal = () => {
             return;
         }
 
+        // Seçilen bölge adını al
+        const selectedDistrict = districtDropdown.options[districtDropdown.selectedIndex].text.replace(' Catering', '');
+        
+        // "Hangi bölgede yemek istiyorsunuz?" başlığını güncelle
+        selectorTitle.textContent = `${selectedDistrict} Catering Hizmetleri`;
+        
         // Tüm kartları seç
         const districtCards = document.querySelectorAll('.district-card');
         let selectedCard = null;
@@ -5100,11 +5107,27 @@ const setupDistrictModal = () => {
 
         if (selectedCard) {
             showDistrictCard(selectedCard);
+            
+            // Filtre butonlarını güncelle
+            updateFilterButtons(selectedCard);
         } else {
             const errorMsg = `Seçilen bölge (${districtDropdown.options[districtDropdown.selectedIndex].text}) bulunamadı. 
                             Lütfen farklı bir bölge seçin veya bizimle iletişime geçin.`;
             alert(errorMsg);
         }
+    };
+
+    // Filtre butonlarını güncelle
+    const updateFilterButtons = (card) => {
+        const region = card.getAttribute('data-region');
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        
+        filterButtons.forEach(button => {
+            button.classList.remove('active');
+            if (button.getAttribute('data-filter') === region || button.getAttribute('data-filter') === 'all') {
+                button.classList.add('active');
+            }
+        });
     };
 
     // Bölge kartını modalda göster
@@ -5215,6 +5238,12 @@ const setupDistrictModal = () => {
         document.body.style.overflow = '';
         modalElement.setAttribute('aria-hidden', 'true');
         
+        // Başlığı orijinal haline getir
+        selectorTitle.textContent = 'Hangi bölgede yemek istiyorsunuz?';
+        
+        // Dropdown'u sıfırla
+        districtDropdown.selectedIndex = 0;
+        
         // Dropdown'a odaklan
         setTimeout(() => {
             if (districtDropdown) districtDropdown.focus();
@@ -5305,6 +5334,9 @@ const setupDistrictModal = () => {
     // Başlat
     init();
 };
+
+// Fonksiyonu çağır
+setupDistrictModal();
 
 // 13. BÖLGE FİLTRELEME SİSTEMİ
 const setupRegionFilters = () => {
