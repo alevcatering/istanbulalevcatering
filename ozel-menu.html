@@ -5046,9 +5046,10 @@ body.dark-mode .weekly-menu-image {
       <a href="https://wa.me/905424992734" class="btn" target="_blank" rel="noopener">
         <i class="fa-brands fa-whatsapp" aria-hidden="true"></i> WhatsApp
       </a>
-      <a href="#contact" class="btn btn-outline">
-        <i class="fa-solid fa-phone" aria-hidden="true"></i> İletişim
-      </a>
+<a href="tel:+905424992734" class="btn btn-outline">
+  <i class="fa-solid fa-phone" aria-hidden="true"></i> İletişim
+</a>
+
     </div>
   </div>
 </div>
@@ -5281,20 +5282,16 @@ document.addEventListener('DOMContentLoaded', function() {
 (() => {
   const MODAL_ID = 'siteInfoModal';
   const SHOW_DELAY_MS = 7000;
-  let showTimer = null;
+  let showTimer;
 
   const qs = (sel, root=document) => root.querySelector(sel);
 
   const addInClasses = (modal) => {
     const panel = qs('.site-info-panel', modal);
     const backdrop = qs('.site-info-backdrop', modal);
-    // önce OUT sınıflarını temizle
     panel?.classList.remove('panel-anim-out');
     backdrop?.classList.remove('backdrop-anim-out');
-    // reflow: mobil safari için animasyonu garanti başlat
-    void panel?.offsetWidth;
-    void backdrop?.offsetWidth;
-    // sonra IN sınıflarını ekle
+    void panel?.offsetWidth; // reflow
     panel?.classList.add('panel-anim-in');
     backdrop?.classList.add('backdrop-anim-in');
   };
@@ -5305,7 +5302,6 @@ document.addEventListener('DOMContentLoaded', function() {
     panel?.classList.remove('panel-anim-in');
     backdrop?.classList.remove('backdrop-anim-in');
     void panel?.offsetWidth;
-    void backdrop?.offsetWidth;
     panel?.classList.add('panel-anim-out');
     backdrop?.classList.add('backdrop-anim-out');
   };
@@ -5313,15 +5309,10 @@ document.addEventListener('DOMContentLoaded', function() {
   const openModal = () => {
     const modal = document.getElementById(MODAL_ID);
     if (!modal) return;
-
     modal.classList.add('is-open');
     modal.setAttribute('aria-hidden', 'false');
     document.documentElement.classList.add('modal-open');
-
-    // animasyonu güvenli başlat
     requestAnimationFrame(() => addInClasses(modal));
-
-    // odak
     requestAnimationFrame(() => {
       (qs('.site-info-close', modal) || qs('.site-info-panel', modal))?.focus?.();
     });
@@ -5330,9 +5321,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const closeModal = () => {
     const modal = document.getElementById(MODAL_ID);
     if (!modal || !modal.classList.contains('is-open')) return;
-
     addOutClasses(modal);
-
     const panel = qs('.site-info-panel', modal);
     const onEnd = (e) => {
       if (e.target !== panel) return;
@@ -5340,15 +5329,11 @@ document.addEventListener('DOMContentLoaded', function() {
       modal.classList.remove('is-open');
       modal.setAttribute('aria-hidden', 'true');
       document.documentElement.classList.remove('modal-open');
-      // temizlik: sınıfları sıfırla ki bir sonraki açılış temiz başlasın
       panel.classList.remove('panel-anim-out');
       qs('.site-info-backdrop', modal)?.classList.remove('backdrop-anim-out');
-      // başlangıç hallerine dönmesi için IN sınıfları zaten kaldırıldı.
     };
     panel?.addEventListener('animationend', onEnd, { once: true });
-
-    // güvenlik yedeği (animend kaçarsa)
-    setTimeout(() => onEnd({ target: panel }), 500);
+    setTimeout(() => onEnd({ target: panel }), 500); // fallback
   };
 
   const handleClick = (e) => {
@@ -5362,12 +5347,11 @@ document.addEventListener('DOMContentLoaded', function() {
   };
 
   document.addEventListener('DOMContentLoaded', () => {
-    scheduleOpen();                             // her girişte göster
-    document.addEventListener('click', handleClick);
+    scheduleOpen();
+    document.addEventListener('click', handleClick, { passive: true });
     document.addEventListener('keydown', handleKey);
   });
 
-  // BFCache geri/ileri durumunda da tekrar tetikle
   window.addEventListener('pageshow', (e) => {
     if (e.persisted) scheduleOpen();
   });
