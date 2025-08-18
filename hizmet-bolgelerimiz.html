@@ -3466,7 +3466,7 @@ body.dark-mode .fa-sun {
         <h1 id="hero-heading">Hizmet Bölgelerimiz</h1>
         <p>İstanbul'un Her Noktasına Profesyonel Catering Hizmeti</p>
         <div class="hero-btns">
-            <a href="#contact" class="btn">Hemen Teklif Al...</a>
+            <a href="#contact" class="btn">Hemen Teklif Al</a>
             <a href="#regions" class="btn btn-outline">Bölgeleri Keşfet</a>
         </div>
     </section>
@@ -4987,7 +4987,7 @@ const optimizeForMobile = () => {
     }
 };
 
-// 12. BÖLGE MODAL FONKSİYONLARI (Optimize Edildi)
+// 12. BÖLGE MODAL FONKSİYONLARI (Optimize Edildi - Mobil için hemen yükleme eklendi)
 const setupDistrictModal = () => {
     // Modal elementini oluştur
     const modal = document.createElement('div');
@@ -5075,12 +5075,9 @@ const setupDistrictModal = () => {
         document.body.style.overflow = 'hidden';
         
         // Mobilde dokunmatik etkileşim için zorunlu yeniden boyutlandırma
-        if (window.innerWidth <= 768) {
-            setTimeout(() => {
-                modalCard.style.transform = 'scale(1)';
-                modalCard.style.opacity = '1';
-            }, 10);
-        }
+        // Eski: setTimeout kullanıyordu, yeni: hemen yükle
+        modalCard.style.transform = 'scale(1)';
+        modalCard.style.opacity = '1';
         
         // Orijinal karta odaklan
         if ('scrollBehavior' in document.documentElement.style) {
@@ -5097,6 +5094,13 @@ const setupDistrictModal = () => {
         if (mobileMenu && mobileMenu.classList.contains('active')) {
             mobileMenu.classList.remove('active');
             document.body.style.overflow = 'hidden'; // Modal açıkken scroll'u engelle
+        }
+        
+        // Mobil cihazlarda otomatik olarak modal içeriğine odaklan
+        if (window.innerWidth <= 768) {
+            setTimeout(() => {
+                modalContent.focus();
+            }, 100);
         }
     };
     
@@ -5175,7 +5179,7 @@ const setupDistrictModal = () => {
         }
     });
     
-    // Mobil dokunmatik etkileşimler
+    // Mobil dokunmatik etkileşimler - Pasif olarak işaretlendi
     modalElement.addEventListener('touchstart', function(e) {
         // Modal içeriğine dokunulmadıysa kapat
         if (!modalContent.contains(e.target)) {
@@ -5185,6 +5189,31 @@ const setupDistrictModal = () => {
     
     // Başlat
     initializeDropdown();
+    
+    // Mobil cihazlarda hemen yükleme için ek optimizasyon
+    if (window.innerWidth <= 768) {
+        // Mobilde animasyonları optimize et
+        document.querySelectorAll('.district-modal, .district-modal-content').forEach(el => {
+            el.style.willChange = 'transform, opacity';
+        });
+        
+        // Modal içeriği için ek stil
+        const style = document.createElement('style');
+        style.textContent = `
+            @media (max-width: 768px) {
+                .district-modal.active .district-modal-content {
+                    animation: none !important;
+                    transform: none !important;
+                    opacity: 1 !important;
+                }
+                
+                .modal-district-card {
+                    transition: none !important;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    }
 };
 
 // 13. BÖLGE FİLTRELEME SİSTEMİ
