@@ -1937,15 +1937,16 @@ body.dark-mode .faq-answer p {
     }
 }
 
-/* === Bilgilendirici Modal (mobil güvenli animasyon) === */
+/* Bilgilendirici Modal Stilleri */
 .site-info-modal {
   position: fixed;
   inset: 0;
-  display: none;                 /* .is-open ile flex olur */
+  display: none;
   align-items: center;
   justify-content: center;
   z-index: 2000;
 }
+
 .site-info-modal.is-open { display: flex; }
 
 /* Backdrop */
@@ -1955,7 +1956,8 @@ body.dark-mode .faq-answer p {
   background: rgba(0,0,0,0.35);
   -webkit-backdrop-filter: blur(2px);
   backdrop-filter: blur(2px);
-  opacity: 0;                    /* başlangıç */
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 body.dark-mode .site-info-backdrop { background: rgba(0,0,0,0.45); }
 
@@ -1964,62 +1966,138 @@ body.dark-mode .site-info-backdrop { background: rgba(0,0,0,0.45); }
   position: relative;
   z-index: 1;
   width: min(92vw, 560px);
+  max-height: 90vh;
   border-radius: 16px;
   padding: 24px 22px 20px;
-  background: rgba(255,255,255,0.7);
+  background: rgba(255,255,255,0.95);
   border: 1px solid rgba(255,255,255,0.6);
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   box-shadow: 0 25px 80px rgba(0,0,0,0.25);
-
-  /* animasyon başlangıç halleri */
+  overflow-y: auto;
   opacity: 0;
   transform: translate3d(0,24px,0) scale(.96);
   will-change: transform, opacity;
 }
 body.dark-mode .site-info-panel {
-  background: rgba(30,30,30,0.65);
+  background: rgba(30,30,30,0.9);
   border-color: rgba(255,255,255,0.08);
 }
 
-/* Close butonu ve içerik stilleri (değişmediyse aynı kalabilir) */
-.site-info-close{
-  position:absolute; top:10px; right:10px; width:40px; height:40px;
-  border:none; border-radius:50%; background:rgba(255,255,255,0.75);
-  cursor:pointer; display:grid; place-items:center; transition:transform .2s ease;
+/* Close butonu */
+.site-info-close {
+  position: absolute;
+  top: 12px; right: 12px;
+  width: 40px; height: 40px;
+  border: none; border-radius: 50%;
+  background: rgba(255,255,255,0.75);
+  cursor: pointer;
+  display: grid; place-items: center;
+  transition: transform .2s ease;
+  color: #333;
 }
-.site-info-close:hover{ transform: rotate(90deg) scale(1.05); }
-body.dark-mode .site-info-close{ background:rgba(255,255,255,0.08); color:#e0e0e0; }
-.site-info-header{ text-align:center; padding:6px 6px 10px; }
-.site-info-icon{ width:64px; height:64px; margin:0 auto 10px; border-radius:50%;
-  display:grid; place-items:center;
-  background:linear-gradient(135deg, rgba(231,76,60,.12), rgba(243,156,18,.15)); }
-.site-info-icon i{ font-size:28px; color:var(--primary-color,#e74c3c); }
-.site-info-header h3{ margin:6px 0 6px; font-size:clamp(20px,2.6vw,24px); color:var(--secondary-color,#2c3e50); }
-body.dark-mode .site-info-header h3{ color:#f5f5f5; }
-.site-info-subtitle{ font-size:clamp(14px,2.4vw,16px); color:#555; margin:0 auto; max-width:40ch; }
-body.dark-mode .site-info-subtitle{ color:#b0b0b0; }
-.site-info-actions{ margin-top:16px; display:flex; gap:10px; justify-content:center; flex-wrap:wrap; }
-.site-info-actions .btn{ min-width:150px; }
+.site-info-close:hover { transform: rotate(90deg) scale(1.05); }
+body.dark-mode .site-info-close {
+  background: rgba(255,255,255,0.15);
+  color: #e0e0e0;
+}
 
-/* --- ANİMASYON SINIFLARI (class tabanlı tetikleme) --- */
+/* İçerik Stilleri */
+.site-info-header { text-align: center; padding: 6px 6px 10px; }
+
+.site-info-icon {
+  width: 64px; height: 64px;
+  margin: 0 auto 10px;
+  border-radius: 50%;
+  display: grid; place-items: center;
+  background: linear-gradient(135deg, rgba(231,76,60,.12), rgba(243,156,18,.15));
+}
+.site-info-icon i {
+  font-size: 28px;
+  color: var(--primary-color,#e74c3c);
+}
+
+/* Başlık */
+.site-info-header h3 {
+  margin: 6px 0 6px;
+  font-size: clamp(20px, 2.6vw, 26px);
+  font-weight: 600;
+  color: var(--secondary-color,#1c1c1c);
+  line-height: 1.35;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.08);
+}
+body.dark-mode .site-info-header h3 {
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+}
+
+/* Genel outline buton */
+.site-info-actions .btn-outline {
+  background-color: transparent;
+  border: 2px solid var(--primary-color);
+  color: var(--primary-color);
+  font-weight: 600;
+  transition: all .3s ease;
+}
+
+/* Hover */
+.site-info-actions .btn-outline:hover {
+  background-color: var(--primary-color);
+  color: #fff;
+}
+
+/* Dark mode için ayrı */
+body.dark-mode .site-info-actions .btn-outline {
+  border-color: #fff;
+  color: #fff;
+}
+
+body.dark-mode .site-info-actions .btn-outline:hover {
+  background-color: #fff;
+  color: var(--primary-color);
+}
+
+
+/* Alt başlık (iletişim yazısı) */
+.site-info-subtitle {
+  font-size: clamp(15px, 2.5vw, 17px);
+  font-weight: 500;
+  color: #2b2b2b;
+  margin: 8px auto 0;
+  max-width: 42ch;
+  line-height: 1.6;
+  text-align: center;
+}
+body.dark-mode .site-info-subtitle { color: #e0e0e0; }
+
+/* Butonlar */
+.site-info-actions {
+  margin-top: 16px;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.site-info-actions .btn {
+  min-width: 150px;
+  padding: 12px 20px;
+}
+
+/* Animasyonlar */
 .backdrop-anim-in { animation: backdropIn 320ms ease-out forwards; }
-.backdrop-anim-out{ animation: backdropOut 240ms ease-in forwards;  }
-.panel-anim-in    { animation: panelIn    420ms cubic-bezier(.2,.8,.2,1) forwards; }
-.panel-anim-out   { animation: panelOut   300ms ease-in forwards; }
-
-/* Keyframes (mobilde filtre animasyonu yok; sadece transform+opacity) */
+.backdrop-anim-out { animation: backdropOut 240ms ease-in forwards; }
+.panel-anim-in { animation: panelIn 420ms cubic-bezier(.2,.8,.2,1) forwards; }
+.panel-anim-out { animation: panelOut 300ms ease-in forwards; }
 @keyframes backdropIn { from{opacity:0} to{opacity:1} }
-@keyframes backdropOut{ from{opacity:1} to{opacity:0} }
-
+@keyframes backdropOut { from{opacity:1} to{opacity:0} }
 @keyframes panelIn {
-  0%   { opacity:0; transform: translate3d(0,24px,0) scale(.96); }
-  60%  { opacity:1; transform: translate3d(0,0,0)   scale(1.02); }
-  100% { opacity:1; transform: translate3d(0,0,0)   scale(1); }
+  0%{opacity:0;transform:translate3d(0,24px,0) scale(.96);}
+  60%{opacity:1;transform:translate3d(0,0,0) scale(1.02);}
+  100%{opacity:1;transform:translate3d(0,0,0) scale(1);}
 }
 @keyframes panelOut {
-  0%   { opacity:1; transform: translate3d(0,0,0)   scale(1); }
-  100% { opacity:0; transform: translate3d(0,12px,0) scale(.96); }
+  0%{opacity:1;transform:translate3d(0,0,0) scale(1);}
+  100%{opacity:0;transform:translate3d(0,12px,0) scale(.96);}
 }
 
 /* Modal açıkken scroll kilidi */
@@ -2027,15 +2105,41 @@ html.modal-open, body.modal-open { overflow: hidden !important; }
 
 /* Hareket azaltma tercihi */
 @media (prefers-reduced-motion: reduce){
-  .backdrop-anim-in,.backdrop-anim-out,.panel-anim-in,.panel-anim-out{ animation:none !important; }
-  .site-info-backdrop{ opacity:1 !important; }
-  .site-info-panel{ opacity:1 !important; transform:none !important; }
+  .backdrop-anim-in,.backdrop-anim-out,
+  .panel-anim-in,.panel-anim-out { animation:none!important; }
+  .site-info-backdrop { opacity:1!important; }
+  .site-info-panel { opacity:1!important; transform:none!important; }
 }
 
-/* iOS/Mobil uyumu: ağır filter animasyonlarını devre dışı bırak */
+/* Mobil optimizasyon */
 @media (max-width: 768px){
-  .site-info-panel{ filter:none !important; }
+  .site-info-panel {
+    width: 95vw;
+    padding: 20px 15px;
+    max-height: 85vh;
+  }
+  .site-info-close {
+    width: 36px; height: 36px;
+    top: 8px; right: 8px;
+  }
+  .site-info-actions {
+    flex-direction: column;
+    gap: 8px;
+  }
+  .site-info-actions .btn { width: 100%; }
+  .site-info-subtitle {
+    font-size: 15px;
+    padding: 0 6px;
+  }
 }
+@media (max-width: 480px){
+  .site-info-panel { border-radius: 12px; padding: 18px 12px; }
+  .site-info-icon { width: 56px; height: 56px; }
+  .site-info-icon i { font-size: 24px; }
+  .site-info-header h3 { font-size: 20px; }
+  .site-info-subtitle { font-size: 15px; }
+}
+
 
 /* Hizmet Kapsamı Geliştirilmiş Stiller */
 .service-scope-enhanced {
